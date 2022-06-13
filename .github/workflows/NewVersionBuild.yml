@@ -1,0 +1,68 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: New Version Build
+
+on:
+  schedule:
+    - cron: '0 10 1-30/3 * *'
+    - cron: '0 10 1,16 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set environment variable
+      run: echo "date=$(date +%Y%m%d)" >> $GITHUB_ENV
+    - uses: actions/checkout@v3
+      with:
+        path: buildtool
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    - name: Get YAML python package
+      run: pip install pyyaml
+    - name: Set up BuildTool
+      run: |
+        wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
+        mkdir -p output
+      working-directory: buildtool
+    - name: Build new version Spigot
+      run: python3 build.py new
+      working-directory: buildtool
+    - name: Build legacy version Spigot
+      if: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '0 10 1,16 * *' }}
+      run: python3 build.py legacy
+      working-directory: buildtool
+    - uses: actions/checkout@v3
+      with:
+        ref: release
+        path: release
+    - name: Copy build output
+      run: mv buildtool/output/* release/
+    - name: Push builds to release branch
+      run: |
+        git update-ref -d HEAD
+        git add .
+        git config user.name "github-actions"
+        git config user.email "41898282+github-actions@users.noreply.github.com"
+        git commit -m "${{ env.date }} Build"
+        git push -u origin release
+      working-directory: release
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: ${{ env.date }} Build
+        tag_name: ${{ env.date }}
+        target_commitish: release
+        files: release/*.jar

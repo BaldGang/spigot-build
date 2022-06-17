@@ -7,7 +7,6 @@ name: Spigot Build
 
 on:
   schedule:
-    - cron: '0 10 1,16 * *'
     - cron: '0 10 1-30/3 * *'
   workflow_dispatch:
 
@@ -21,7 +20,9 @@ jobs:
 
     steps:
     - name: Set environment variable
-      run: echo "date=$(date +%Y%m%d)" >> $GITHUB_ENV
+      run: |
+        echo "date=$(date +%Y%m%d)" >> $GITHUB_ENV
+        test $(date +%d) = 01 -o $(date +%d) = 16 && echo "buildLegacy=true" >> $GITHUB_ENV || echo "buildLegacy=false" >> $GITHUB_ENV
     - uses: actions/checkout@v3
       with:
         path: buildtool
@@ -41,17 +42,17 @@ jobs:
       run: python3 build.py new
       working-directory: buildtool
     - name: Build legacy version Spigot
-      if: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '0 10 1,16 * *' }}
+      if: ${{ env.buildLegacy || github.event_name == 'workflow_dispatch' }}
       run: python3 build.py legacy
       working-directory: buildtool
     - name: Set up JDK 8
-      if: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '0 10 1,16 * *' }}
+      if: ${{ env.buildLegacy || github.event_name == 'workflow_dispatch' }}
       uses: actions/setup-java@v3
       with:
         java-version: '8'
         distribution: 'temurin'
     - name: Build legacy version Spigot with old Java
-      if: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '0 10 1,16 * *' }}
+      if: ${{ env.buildLegacy || github.event_name == 'workflow_dispatch' }}
       run: python3 build.py legacy-old-java
       working-directory: buildtool
     - uses: actions/checkout@v3

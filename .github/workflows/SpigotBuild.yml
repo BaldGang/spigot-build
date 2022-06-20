@@ -42,17 +42,17 @@ jobs:
       run: python3 build.py new
       working-directory: buildtool
     - name: Build legacy version Spigot
-      if: ${{ env.buildLegacy || github.event_name == 'workflow_dispatch' }}
+      if: ${{ fromJSON(env.buildLegacy) || github.event_name == 'workflow_dispatch' }}
       run: python3 build.py legacy
       working-directory: buildtool
     - name: Set up JDK 8
-      if: ${{ env.buildLegacy || github.event_name == 'workflow_dispatch' }}
+      if: ${{ fromJSON(env.buildLegacy) || github.event_name == 'workflow_dispatch' }}
       uses: actions/setup-java@v3
       with:
         java-version: '8'
         distribution: 'temurin'
     - name: Build legacy version Spigot with old Java
-      if: ${{ env.buildLegacy || github.event_name == 'workflow_dispatch' }}
+      if: ${{ fromJSON(env.buildLegacy) || github.event_name == 'workflow_dispatch' }}
       run: python3 build.py legacy-old-java
       working-directory: buildtool
     - uses: actions/checkout@v3

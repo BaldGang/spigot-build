@@ -38,6 +38,28 @@ jobs:
         wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
         mkdir -p output
       working-directory: buildtool
+    - name: Cache .m2 folder
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-cache-maven-${{ env.date }}
+        restore-keys: ${{ runner.os }}-cache-maven-
+    - name: Cache Spigot repos
+      uses: actions/cache@v3
+      with:
+        path: |
+          buildtool/apache-maven-*
+          buildtool/Bukkit
+          buildtool/CraftBukkit
+          buildtool/Spigot
+        key: ${{ runner.os }}-cache-spigot-${{ env.date }}
+        restore-keys: ${{ runner.os }}-cache-spigot-
+    - name: Cache build works
+      uses: actions/cache@v3
+      with:
+        path: buildtool/work
+        key: ${{ runner.os }}-cache-build-work-${{ env.date }}
+        restore-keys: ${{ runner.os }}-cache-build-work-
     - name: Build new version Spigot
       run: python3 build.py new
       working-directory: buildtool

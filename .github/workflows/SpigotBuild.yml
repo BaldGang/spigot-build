@@ -77,20 +77,24 @@ jobs:
       if: ${{ fromJSON(env.buildLegacy) || github.event_name == 'workflow_dispatch' }}
       run: python3 build.py legacy-old-java
       working-directory: buildtool
-    - uses: actions/checkout@v3
-      with:
-        ref: release
-        path: release
+    - name: Download previous build
+      uses: robinraju/release-downloader@v1.4
+      with: 
+        latest: true
+        fileName: "*.jar"
+        out-file-path: "release"
     - name: Copy build output
       run: mv buildtool/output/* release/
     - name: Push builds to release branch
       run: |
-        git update-ref -d HEAD
-        git add .
+        git init
         git config user.name "github-actions"
         git config user.email "41898282+github-actions@users.noreply.github.com"
+        git remote add origin "https://${{github.actor}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}"
+        git checkout -b release
+        git add .
         git commit -m "${{ env.date }} Build"
-        git push -f -u origin release
+        git push -f origin release
       working-directory: release
     - name: Create Release
       uses: softprops/action-gh-release@v1

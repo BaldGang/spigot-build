@@ -79,12 +79,16 @@ jobs:
       working-directory: buildtool
     - name: Download previous build
       uses: robinraju/release-downloader@v1.4
+      if: ${{ fromJSON(env.buildLegacy) != 'true' }}
       with: 
         latest: true
         fileName: "*.jar"
         out-file-path: "release"
     - name: Copy build output
       run: mv buildtool/output/* release/
+    - name: Generate readme
+      run: python3 ../buildtool/table.py ${{ env.date }} README.md
+      working-directory: release
     - name: Push builds to release branch
       run: |
         git init
@@ -102,4 +106,6 @@ jobs:
         name: ${{ env.date }} Build
         tag_name: ${{ env.date }}
         target_commitish: release
-        files: release/*.jar
+        files: *.jar
+        body_path: README.md
+      working-directory: release

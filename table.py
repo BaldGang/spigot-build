@@ -19,28 +19,28 @@ def get_version_map():
         version_map[version] = dict(sorted(version_map[version].items()))
     return version_map
 
-def generate_table(versions, tag):
+def generate_table(versions, tag, file):
     longest = 0
     for version in versions:
         length = len(versions[version])
         if length > longest:
             longest = length
 
-    print('|Version Family|', end='')
+    file.write(f'| Version Family |')
     for _ in range(longest):
-        print(' |', end='')
-    print('\n|:---:|', end='')
+        file.write(' |')
+    file.write('\n|:---:|')
     for _ in range(longest):
-        print('---|', end='')
-    print()
+        file.write('---|')
+    file.write('\n')
 
     for version in versions:
-        print('|', version, '|', end='')
+        file.write(f'| {version} |')
         for minor in versions[version]:
-            print('', generate_version_link(version, minor, tag), '|', end='')
+            file.write(f' {generate_version_link(version, minor, tag)} |')
         for _ in range(longest - len(versions[version])):
-            print(' |', end='')
-        print()
+            file.write(' |')
+        file.write('\n')
 
 def generate_version_link(major, minor, tag):
     version = '1.' + str(major)
@@ -51,4 +51,7 @@ def generate_version_link(major, minor, tag):
 if __name__ == '__main__':
     tag = os.sys.argv[1]
     versions = get_version_map()
-    generate_table(versions, tag)
+    output = os.sys.argv[2]
+    f = open(output, 'w')
+    generate_table(versions, tag, f)
+    f.close()

@@ -106,6 +106,5 @@ jobs:
         name: ${{ env.date }} Build
         tag_name: ${{ env.date }}
         target_commitish: release
-        files: *.jar
-        body_path: README.md
-      working-directory: release
+        files: release/*.jar
+        body_path: release/README.md

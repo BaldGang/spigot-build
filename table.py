@@ -35,7 +35,7 @@ def generate_table(versions, tag, file):
     file.write('\n')
 
     for version in versions:
-        file.write(f'| {version} |')
+        file.write(f'| 1.{version} |')
         for minor in versions[version]:
             file.write(f' {generate_version_link(version, minor, tag)} |')
         for _ in range(longest - len(versions[version])):

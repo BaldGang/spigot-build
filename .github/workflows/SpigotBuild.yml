@@ -79,7 +79,7 @@ jobs:
       working-directory: buildtool
     - name: Download previous build
       uses: robinraju/release-downloader@v1.4
-      if: ${{ fromJSON(env.buildLegacy) != 'true' }}
+      if: ${{ fromJSON(env.buildLegacy) != true }}
       with: 
         latest: true
         fileName: "*.jar"

@@ -85,7 +85,7 @@ jobs:
         fileName: "*.jar"
         out-file-path: "release"
     - name: Copy build output
-      run: mv buildtool/output/* release/
+      run: mkdir -p release && mv buildtool/output/*.jar release/
     - name: Generate readme
       run: python3 ../buildtool/table.py ${{ env.date }} README.md
       working-directory: release

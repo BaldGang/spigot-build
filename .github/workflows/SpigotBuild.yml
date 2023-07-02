@@ -78,7 +78,7 @@ jobs:
       run: python3 build.py legacy-old-java
       working-directory: buildtool
     - name: Download previous build
-      uses: robinraju/release-downloader@v1.6
+      uses: robinraju/release-downloader@v1.8
       if: ${{ fromJSON(env.buildLegacy) != true }}
       with: 
         latest: true

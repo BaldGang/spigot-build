@@ -8,6 +8,7 @@ The latest build is available in [release](https://github.com/BaldGang/spigot-bu
 
 | Version Family | | | | | |
 |:---:|---|---|---|---|---|
+| 1.21 | [1.21](https://github.com/BaldGang/spigot-build/releases/latest/download/spigot-1.21.jar)* | | | | |
 | 1.20 | [1.20.1](https://github.com/BaldGang/spigot-build/releases/latest/download/spigot-1.20.1.jar)* | [1.20.2](https://github.com/BaldGang/spigot-build/releases/latest/download/spigot-1.20.2.jar) | [1.20.4](https://github.com/BaldGang/spigot-build/releases/latest/download/spigot-1.20.4.jar)* | [1.20.6](https://github.com/BaldGang/spigot-build/releases/latest/download/spigot-1.20.6.jar)* | |
 | 1.19 | [1.19](https://github.com/BaldGang/spigot-build/releases/latest/download/spigot-1.19.jar) | [1.19.1](https://github.com/BaldGang/spigot-build/releases/latest/download/spigot-1.19.1.jar) | [1.19.2](https://github.com/BaldGang/spigot-build/releases/latest/download/spigot-1.19.2.jar) | [1.19.3](https://github.com/BaldGang/spigot-build/releases/latest/download/spigot-1.19.3.jar) | [1.19.4](https://github.com/BaldGang/spigot-build/releases/latest/download/spigot-1.19.4.jar) |
 | 1.18 | [1.18](https://github.com/BaldGang/spigot-build/releases/latest/download/spigot-1.18.jar) | [1.18.1](https://github.com/BaldGang/spigot-build/releases/latest/download/spigot-1.18.1.jar) | [1.18.2](https://github.com/BaldGang/spigot-build/releases/latest/download/spigot-1.18.2.jar) | | |

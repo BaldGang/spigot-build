@@ -1,8 +1,3 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Spigot Build
 
 on:
@@ -22,7 +17,11 @@ jobs:
     - name: Set environment variable
       run: |
         echo "date=$(date +%Y%m%d)" >> $GITHUB_ENV
-        test $(date +%d) = 01 -o $(date +%d) = 16 && echo "buildLegacy=true" >> $GITHUB_ENV || echo "buildLegacy=false" >> $GITHUB_ENV
+        if [ "$(date +%d)" = "01" ] || [ "$(date +%d)" = "16" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "buildLegacy=true" >> $GITHUB_ENV
+        else
+          echo "buildLegacy=false" >> $GITHUB_ENV
+        fi
     - uses: actions/checkout@v4
       with:
         path: buildtool
@@ -38,14 +37,14 @@ jobs:
         wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
         mkdir -p output
       working-directory: buildtool
-    - name: Cache .m2 folder
-      uses: actions/cache@v4
+    - name: Restore cache .m2 folder
+      uses: actions/cache/restore@v4
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-cache-maven-${{ env.date }}
         restore-keys: ${{ runner.os }}-cache-maven-
-    - name: Cache Spigot repos
-      uses: actions/cache@v4
+    - name: Restore cache Spigot repos
+      uses: actions/cache/restore@v4
       with:
         path: |
           buildtool/apache-maven-*
@@ -54,8 +53,8 @@ jobs:
           buildtool/Spigot
         key: ${{ runner.os }}-cache-spigot-${{ env.date }}
         restore-keys: ${{ runner.os }}-cache-spigot-
-    - name: Cache build works
-      uses: actions/cache@v4
+    - name: Restore cache build works
+      uses: actions/cache/restore@v4
       with:
         path: buildtool/work
         key: ${{ runner.os }}-cache-build-work-${{ env.date }}
@@ -64,23 +63,23 @@ jobs:
       run: python3 build.py new
       working-directory: buildtool
     - name: Set up JDK 17
-      if: ${{ fromJSON(env.buildLegacy) || github.event_name == 'workflow_dispatch' }}
+      if: ${{ fromJSON(env.buildLegacy) }}
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
     - name: Build legacy version Spigot with Java 17
-      if: ${{ fromJSON(env.buildLegacy) || github.event_name == 'workflow_dispatch' }}
+      if: ${{ fromJSON(env.buildLegacy) }}
       run: python3 build.py legacy-java-17
       working-directory: buildtool
     - name: Set up JDK 8
-      if: ${{ fromJSON(env.buildLegacy) || github.event_name == 'workflow_dispatch' }}
+      if: ${{ fromJSON(env.buildLegacy) }}
       uses: actions/setup-java@v4
       with:
         java-version: '8'
         distribution: 'temurin'
     - name: Build legacy version Spigot with Java 8
-      if: ${{ fromJSON(env.buildLegacy) || github.event_name == 'workflow_dispatch' }}
+      if: ${{ fromJSON(env.buildLegacy) }}
       run: python3 build.py legacy-java-8
       working-directory: buildtool
     - name: Download previous build
@@ -114,3 +113,25 @@ jobs:
         target_commitish: release
         files: release/*.jar
         body_path: release/README.md
+    - name: Save cache .m2 folder
+      uses: actions/cache/save@v4
+      if: ${{ !fromJSON(env.buildLegacy) }}
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-cache-maven-${{ env.date }}
+    - name: Save cache Spigot repos
+      uses: actions/cache/save@v4
+      if: ${{ !fromJSON(env.buildLegacy) }}
+      with:
+        path: |
+          buildtool/apache-maven-*
+          buildtool/Bukkit
+          buildtool/CraftBukkit
+          buildtool/Spigot
+        key: ${{ runner.os }}-cache-spigot-${{ env.date }}
+    - name: Save cache build works
+      uses: actions/cache/save@v4
+      if: ${{ !fromJSON(env.buildLegacy) }}
+      with:
+        path: buildtool/work
+        key: ${{ runner.os }}-cache-build-work-${{ env.date }}

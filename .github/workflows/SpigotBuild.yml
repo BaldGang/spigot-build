@@ -62,6 +62,10 @@ jobs:
     - name: Build new version Spigot
       run: python3 build.py new
       working-directory: buildtool
+    - name: Build legacy version Spigot with Java 21
+      if: ${{ fromJSON(env.buildLegacy) }}
+      run: python3 build.py legacy-java-21
+      working-directory: buildtool
     - name: Set up JDK 17
       if: ${{ fromJSON(env.buildLegacy) }}
       uses: actions/setup-java@v4

@@ -22,11 +22,11 @@ jobs:
         else
           echo "buildLegacy=false" >> $GITHUB_ENV
         fi
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         path: buildtool
     - name: Set up JDK 21
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         java-version: '21'
         distribution: 'temurin'
@@ -87,7 +87,7 @@ jobs:
       run: python3 build.py legacy-java-8
       working-directory: buildtool
     - name: Download previous build
-      uses: robinraju/release-downloader@v1.10
+      uses: robinraju/release-downloader@v1
       if: ${{ fromJSON(env.buildLegacy) != true }}
       with:
         latest: true

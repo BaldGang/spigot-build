@@ -2,7 +2,7 @@ name: Spigot Build
 
 on:
   schedule:
-    - cron: '0 10 1-30/3 * *'
+    - cron: '45 9 1-30/3 * *'
   workflow_dispatch:
 
 permissions:

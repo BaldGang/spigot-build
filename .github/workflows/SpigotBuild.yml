@@ -22,7 +22,7 @@ jobs:
         else
           echo "buildLegacy=false" >> $GITHUB_ENV
         fi
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         path: buildtool
     - name: Set up JDK 21
@@ -38,13 +38,13 @@ jobs:
         mkdir -p output
       working-directory: buildtool
     - name: Restore cache .m2 folder
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-cache-maven-${{ env.date }}
         restore-keys: ${{ runner.os }}-cache-maven-
     - name: Restore cache Spigot repos
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: |
           buildtool/apache-maven-*
@@ -54,7 +54,7 @@ jobs:
         key: ${{ runner.os }}-cache-spigot-${{ env.date }}
         restore-keys: ${{ runner.os }}-cache-spigot-
     - name: Restore cache build works
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: buildtool/work
         key: ${{ runner.os }}-cache-build-work-${{ env.date }}
@@ -68,7 +68,7 @@ jobs:
       working-directory: buildtool
     - name: Set up JDK 17
       if: ${{ fromJSON(env.buildLegacy) }}
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         java-version: '17'
         distribution: 'temurin'
@@ -78,7 +78,7 @@ jobs:
       working-directory: buildtool
     - name: Set up JDK 8
       if: ${{ fromJSON(env.buildLegacy) }}
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         java-version: '8'
         distribution: 'temurin'
@@ -96,7 +96,7 @@ jobs:
     - name: Copy build output
       run: mkdir -p release && mv buildtool/output/*.jar release/
     - name: Generate readme
-      run: python3 ../buildtool/table.py ${{ env.date }} README.md
+      run: python3 ../buildtool/table.py ${{ github.repository }} ${{ env.date }} README.md
       working-directory: release
     - name: Push builds to release branch
       run: |
@@ -118,13 +118,13 @@ jobs:
         files: release/*.jar
         body_path: release/README.md
     - name: Save cache .m2 folder
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       if: ${{ !fromJSON(env.buildLegacy) }}
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-cache-maven-${{ env.date }}
     - name: Save cache Spigot repos
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       if: ${{ !fromJSON(env.buildLegacy) }}
       with:
         path: |
@@ -134,7 +134,7 @@ jobs:
           buildtool/Spigot
         key: ${{ runner.os }}-cache-spigot-${{ env.date }}
     - name: Save cache build works
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       if: ${{ !fromJSON(env.buildLegacy) }}
       with:
         path: buildtool/work

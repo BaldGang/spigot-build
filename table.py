@@ -5,7 +5,7 @@ def get_version_map():
     files = os.listdir()
     version_map = {}
     for file in files:
-        version = re.match(r'^spigot-1\.(\d{1,2})(?:\.(\d))?.jar$', file)
+        version = re.match(r'^spigot-1\.(\d{1,2})(?:\.(\d{1,2}))?.jar$', file)
         if version is None:
             continue
         major = int(version.group(1))

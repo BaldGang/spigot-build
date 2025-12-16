@@ -100,11 +100,10 @@ jobs:
       working-directory: release
     - name: Push builds to release branch
       run: |
-        git init
+        git init -b release
         git config user.name "github-actions"
         git config user.email "41898282+github-actions@users.noreply.github.com"
         git remote add origin "https://${{github.actor}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}"
-        git checkout -b release
         git add README.md
         git commit -m "${{ env.date }} Build"
         git push -f origin release

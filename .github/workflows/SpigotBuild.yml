@@ -63,6 +63,7 @@ jobs:
       run: python3 build.py new
       working-directory: buildtool
     - name: Set up JDK 21
+      if: ${{ fromJSON(env.buildLegacy) }}
       uses: actions/setup-java@v5
       with:
         java-version: '21'

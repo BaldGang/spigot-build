@@ -107,12 +107,13 @@ jobs:
     - name: Push builds to release branch
       run: |
         git init -b release
-        git config user.name "github-actions"
-        git config user.email "41898282+github-actions@users.noreply.github.com"
-        git remote add origin "https://${{github.actor}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}"
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git remote add origin "${{ github.server_url }}/${{ github.repository }}"
         git add README.md
         git commit -m "${{ env.date }} Build"
-        git push -f origin release
+        AUTH="http.${{ github.server_url }}/.extraheader=AUTHORIZATION: basic $(echo -n 'x-access-token:${{ secrets.GITHUB_TOKEN }}' | base64)"
+        git -c "${AUTH}" push -f origin release
       working-directory: release
     - name: Create Release
       uses: softprops/action-gh-release@v3

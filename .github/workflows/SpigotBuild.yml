@@ -112,7 +112,7 @@ jobs:
         git remote add origin "${{ github.server_url }}/${{ github.repository }}"
         git add README.md
         git commit -m "${{ env.date }} Build"
-        AUTH="http.${{ github.server_url }}/.extraheader=AUTHORIZATION: basic $(echo -n 'x-access-token:${{ secrets.GITHUB_TOKEN }}' | base64)"
+        AUTH="http.${{ github.server_url }}/.extraheader=AUTHORIZATION: basic $(echo -n 'x-access-token:${{ secrets.GITHUB_TOKEN }}' | base64 -w0)"
         git -c "${AUTH}" push -f origin release
       working-directory: release
     - name: Create Release

@@ -1,32 +1,37 @@
 import os
 import re
+from collections import defaultdict
 from typing import TextIO
 
-def get_version_map() -> dict[str, dict[int, str]]:
+def get_version_map() -> dict[str, list[str]]:
     files = os.listdir()
-    version_map = {}
-    pattern = re.compile(r'^spigot-(\d+\.\d+)(?:\.(\d+))?\.jar$')
+    version_map = defaultdict(list)
+    pattern = re.compile(r'^spigot-(\d+(?:\.\d+)+)\.jar$')
     for file in files:
-        version = pattern.match(file)
-        if version is None:
+        match = pattern.match(file)
+        if match is None:
             continue
-        family = version.group(1)
-        patch = int(version.group(2) or 0)
-        if family in version_map:
-            version_map[family][patch] = file
-        else:
-            version_map[family] = {patch: file}
+        version = match.group(1)
+        parts = version.split('.')
+        if parts[0] == '1':  # 1.x.y => 1.x (e.g. 1.21.8)
+            family = '.'.join(parts[:2])
+        else:  # x.y => x (e.g. 26.1.2)
+            family = parts[0]
+        version_map[family].append(version)
     version_map = dict(sorted(
         version_map.items(),
         key=lambda item: tuple(int(p) for p in item[0].split('.')),
         reverse=True,
     ))
     for family in version_map:
-        version_map[family] = dict(sorted(version_map[family].items()))
+        version_map[family] = sorted(
+            version_map[family],
+            key=lambda version: tuple(int(p) for p in version.split('.')),
+        )
     return version_map
 
-def generate_table(versions: dict[str, dict[int, str]], repo: str, tag: str, file: TextIO) -> None:
-    longest = max(len(versions[v]) for v in versions) if versions else 0
+def generate_table(versions: dict[str, list[str]], repo: str, tag: str, file: TextIO) -> None:
+    longest = max((len(versions[v]) for v in versions), default=0)
 
     file.write(f'| Version Family |')
     for _ in range(longest):
@@ -38,16 +43,13 @@ def generate_table(versions: dict[str, dict[int, str]], repo: str, tag: str, fil
 
     for family in versions:
         file.write(f'| {family} |')
-        for patch in versions[family]:
-            file.write(f' {generate_version_link(family, patch, repo, tag)} |')
+        for version in versions[family]:
+            file.write(f' {generate_version_link(version, repo, tag)} |')
         for _ in range(longest - len(versions[family])):
             file.write(' |')
         file.write('\n')
 
-def generate_version_link(family: str, patch: int, repo: str, tag: str) -> str:
-    version = family
-    if patch != 0:
-        version += '.' + str(patch)
+def generate_version_link(version: str, repo: str, tag: str) -> str:
     return f'[{version}](https://github.com/{repo}/releases/download/{tag}/spigot-{version}.jar)'
 
 if __name__ == '__main__':
